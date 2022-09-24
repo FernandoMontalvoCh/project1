@@ -2,11 +2,12 @@ const express = require('express');
 
 //Controllers
 const { 
-    getAllUsers, 
     createUser, 
     updateUser, 
     deleteUser, 
     login,
+    getAllOrders,
+    getOneOrder,
 } = require('../controllers/users.cotroller');
 
 const userRouter = express.Router();
@@ -35,8 +36,8 @@ userRouter.patch('/:id', userExist, protectUserAccount, updateUser);
 
 userRouter.delete('/:id', userExist, protectUserAccount, deleteUser);
 
-userRouter.get('/orders', grantAccessToUsers, getAllUsers);
+userRouter.get('/orders', getAllOrders);
 
-userRouter.get('/orders/:id')
+userRouter.get('/orders/:id', getOneOrder);
 
 module.exports = { userRouter };

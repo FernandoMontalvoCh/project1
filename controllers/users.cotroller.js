@@ -4,6 +4,8 @@ const dotenv = require("dotenv");
 
 // Models
 const { User } = require("../models/user.model");
+const { Order } = require("../models/order.model");
+const { Restaurant } = require("../models/restaurant.model");
 
 // Utils
 const { catchAsync } = require("../utils/catchAsync.util");
@@ -11,25 +13,11 @@ const { AppError } = require("../utils/appError.util");
 
 dotenv.config({ path: "./config.env" });
 
-const getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.findAll({
-    attributes: { exclude: ["password"] },
-    where: { status: "active" },
-  });
-
-  res.status(200).json({
-    status: "success",
-    data: {
-      users,
-    },
-  });
-});
-
 const createUser = catchAsync(async (req, res, next) => {
   const { name, email, password, role } = req.body;
 
   if (role !== "admin" && role !== "normal") {
-    return next(new AppError('Invalid role', 400));
+    return next(new AppError("Invalid role", 400));
   }
 
   // Encrypt the password
@@ -100,7 +88,7 @@ const login = catchAsync(async (req, res, next) => {
   // Compare passwords (entered password vs db password)
   // If user dosen't exist or password dosen't match, send error
   if (!user || !(await bcrypt.compare(password, user.password))) {
-    return next(new AppError('Wrong credentials', 400));
+    return next(new AppError("Wrong credentials", 400));
   }
 
   // Remove password from response
@@ -117,10 +105,45 @@ const login = catchAsync(async (req, res, next) => {
   });
 });
 
+const getAllOrders = catchAsync(async (req, res, next) => {
+  const { sessionUser } = req;
+
+  const order = await Order.findAll({
+    include: { model: Restaurant },
+  });
+
+  if (sessionUser.id !== order.id) {
+    return next(new AppError("Does not have orders", 404));
+  }
+  res.status(200).json({
+    status: "success",
+    data: { order },
+  });
+});
+
+const getOneOrder = catchAsync(async (req, res, next) => {
+  const { id } = req.body;
+  const { sessionUser } = req;
+
+  const order = await Order.findOne({
+    include: { model: Restaurant },
+  });
+
+  if (sessionUser.id !== id) {
+    return next(new AppError("User does not have order", 404));
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: { order },
+  });
+});
+
 module.exports = {
-  getAllUsers,
   createUser,
   updateUser,
   deleteUser,
   login,
+  getAllOrders,
+  getOneOrder,
 };

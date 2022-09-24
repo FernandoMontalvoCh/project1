@@ -1,10 +1,14 @@
 const { Order } = require("../models/order.model");
+const { Meal } = require("../models/meal.model");
+const { Restaurant } = require("../models/restaurant.model");
 
 const { catchAsync } = require("../utils/catchAsync.util");
 const { AppError } = require("../utils/appError.util");
 
 const createAnOrder = catchAsync(async (req, res, next) => {
   const { quantity, mealId } = req.body;
+
+  
 
   const newOrder = await Order.create({ quantity, mealId });
 
@@ -15,7 +19,9 @@ const createAnOrder = catchAsync(async (req, res, next) => {
 });
 
 const getAllOrders = catchAsync(async (req, res, next) => {
-  const orders = await Order.findAll();
+  const orders = await Order.findAll({
+    include: [{ model: Meal }, { model: Restaurant }],
+  });
 
   res.status(200).json({
     status: "success",

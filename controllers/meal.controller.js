@@ -1,10 +1,14 @@
 const { Meal } = require("../models/meal.model");
+const { Restaurant } = require("../models/restaurant.model");
 
 const { catchAsync } = require("../utils/catchAsync.util");
 const { AppError } = require("../utils/appError.util");
 
 const getAllMeals = catchAsync(async (req, res, next) => {
-  const meals = await Meal.findAll({ where: { status: "active" } });
+  const meals = await Meal.findAll({ 
+    where: { status: "active" },
+    include: { model: Restaurant },
+  });
 
   res.status(200).json({
     status: "success",
@@ -15,7 +19,10 @@ const getAllMeals = catchAsync(async (req, res, next) => {
 const getOneMeal = catchAsync(async (req, res, next) => {
   const { id } = req.body;
 
-  const meal = await Meal.findOne({ where: { status: "active" } });
+  const meal = await Meal.findOne({ 
+    where: { status: "active" },
+    include: { model: Restaurant },
+  });
 
   if (meal.id !== id) {
     return next(new AppError("Meal not found", 404));
@@ -29,8 +36,13 @@ const getOneMeal = catchAsync(async (req, res, next) => {
 
 const createMeal = catchAsync(async (req, res, next) => {
   const { name, price } = req.body;
+  const { restaurantId } = req.params;
 
-  const newMeal = await Meal.create({ name, price });
+  const newMeal = await Meal.create({
+    name,
+    price,
+    restaurantId,
+  });
 
   res.status(201).json({
     status: "success",

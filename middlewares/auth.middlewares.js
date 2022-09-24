@@ -58,6 +58,15 @@ const protectUserAccount = (req, res, next) => {
   next();
 };
 
+const protectReviewsOwners = (req, res, next) => {
+  const { sessionUser, review } = req;
+
+  if(sessionUser.id !== review.userId) {
+    return next(new AppError('This comment does not belong to you', 403));
+  }
+  next();
+};
+
 // Create middleware that only grants access to admin -> users
 const grantAccessToUsers = (req, res, next) => {
   const { sessionUser } = req;
@@ -73,4 +82,5 @@ module.exports = {
   protectSession,
   protectUserAccount,
   grantAccessToUsers,
+  protectReviewsOwners,
 };

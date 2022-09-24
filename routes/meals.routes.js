@@ -1,20 +1,33 @@
 const express = require('express');
 
+const {
+    getAllMeals,
+    getOneMeal,
+    createMeal,
+    updateMeal,
+    deleteMeal,
+} = require('../controllers/meal.controller');
+
 const mealsRouter = express.Router();
 
-const { protectSession } = require('../middlewares/auth.middlewares');
+const { 
+    protectSession,
+    grantAccessToUsers,
+} = require('../middlewares/auth.middlewares');
 const { mealExist } = require('../middlewares/meals.middlewares');
 
-mealsRouter.get('/');
+const { createMealValidator } = require('../middlewares/validators.middlewares');
 
-mealsRouter.get('/:id');
+mealsRouter.get('/', getAllMeals);
+
+mealsRouter.get('/:id', getOneMeal);
 
 mealsRouter.use(protectSession);
 
-mealsRouter.post('/:id');
+mealsRouter.post('/:id', createMealValidator, createMeal);
 
-mealsRouter.patch('/:id', mealExist);
+mealsRouter.patch('/:id', mealExist, grantAccessToUsers, updateMeal);
 
-mealsRouter.delete('/:id', mealExist);
+mealsRouter.delete('/:id', mealExist, grantAccessToUsers, deleteMeal);
 
 module.exports = { mealsRouter };

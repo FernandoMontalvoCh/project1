@@ -8,9 +8,19 @@ const { AppError } = require("../utils/appError.util");
 const createAnOrder = catchAsync(async (req, res, next) => {
   const { quantity, mealId } = req.body;
 
-  
+  const meal = await Meal.findOne({ where: { id: mealId } });
 
-  const newOrder = await Order.create({ quantity, mealId });
+  if (!meal) {
+    return next(new AppError("The meal dose not exist", 400));
+  }
+
+  const totalPrice = meal.price * quantity;
+
+  const newOrder = await Order.create({
+    quantity,
+    mealId,
+    totalPrice,
+  });
 
   res.status(201).json({
     status: "success",

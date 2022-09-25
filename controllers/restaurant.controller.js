@@ -93,7 +93,10 @@ const updateRestaurantReview = catchAsync(async (req, res, next) => {
   } else {
     return next(new AppError("Not your review", 400));
   }
-  res.status(201).json({ status: "success", review });
+  res.status(201).json({
+    status: "success",
+    data: { review },
+  });
 });
 
 const deleteRestaurantReview = catchAsync(async (req, res, next) => {

@@ -21,6 +21,8 @@ const {
 } = require("../middlewares/auth.middlewares");
 const { restaurantExist } = require("../middlewares/restaurants.middlewares");
 
+const { reviewExist } = require('../middlewares/reviews.middlewares');
+
 const {
   createRestaurantValidator,
   createReviewValidators,
@@ -62,12 +64,14 @@ restaurantsRouter.post(
 
 restaurantsRouter.patch(
   "/reviews/:id",
+  reviewExist,
   protectReviewsOwners,
   updateRestaurantReview
 );
 
 restaurantsRouter.delete(
   "/reviews/:id",
+  reviewExist,
   protectReviewsOwners,
   deleteRestaurantReview
 );

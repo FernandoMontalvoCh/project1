@@ -107,7 +107,9 @@ const deleteRestaurantReview = catchAsync(async (req, res, next) => {
   } else {
     return next(new AppError("Not the author of the review", 400));
   }
-  res.status(204).json({ status: "success" });
+  res.status(204).json({ 
+    status: "success" 
+  });
 });
 
 module.exports = {

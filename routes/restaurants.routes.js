@@ -17,10 +17,14 @@ const {
   protectSession,
   grantAccessToUsers,
   protectReviewsOwners,
+  protectUserAccount,
 } = require("../middlewares/auth.middlewares");
 const { restaurantExist } = require("../middlewares/restaurants.middlewares");
 
-const { createRestaurantValidator } = require('../middlewares/validators.middlewares');
+const {
+  createRestaurantValidator,
+  createReviewValidators,
+} = require("../middlewares/validators.middlewares");
 
 restaurantsRouter.get("/", getAllRestaurants);
 
@@ -28,14 +32,42 @@ restaurantsRouter.get("/:id", getOneRestaurant);
 
 restaurantsRouter.use(protectSession);
 
-restaurantsRouter.post("/", createRestaurantValidator, createRestaurant);
+restaurantsRouter.post(
+  "/",
+  protectUserAccount,
+  createRestaurantValidator,
+  createRestaurant
+);
 
-restaurantsRouter.patch("/:id", restaurantExist, grantAccessToUsers, updateRestaurant);
+restaurantsRouter.patch(
+  "/:id",
+  restaurantExist,
+  grantAccessToUsers,
+  updateRestaurant
+);
 
-restaurantsRouter.delete("/:id", restaurantExist, grantAccessToUsers, deleteRestaurant);
+restaurantsRouter.delete(
+  "/:id",
+  restaurantExist,
+  grantAccessToUsers,
+  deleteRestaurant
+);
 
-restaurantsRouter.post("/reviews/:restaurantId", createRestaurantReview);
+restaurantsRouter.post(
+  "/reviews/:restaurantId",
+  protectUserAccount,
+  createReviewValidators,
+  createRestaurantReview
+);
 
-restaurantsRouter.patch("/reviews/:id", protectReviewsOwners, updateRestaurantReview);
+restaurantsRouter.patch(
+  "/reviews/:id",
+  protectReviewsOwners,
+  updateRestaurantReview
+);
 
-restaurantsRouter.delete("/reviews/:id", protectReviewsOwners, deleteRestaurantReview);
+restaurantsRouter.delete(
+  "/reviews/:id",
+  protectReviewsOwners,
+  deleteRestaurantReview
+);

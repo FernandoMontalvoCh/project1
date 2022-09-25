@@ -75,8 +75,35 @@ body("adress")
 checkValidations,
 ];
 
+const createReviewValidators = [
+  body("userId")
+  .notEmpty()
+  .withMessage("userId cannot be empty")
+  .isLength({ min: 1 })
+  .withMessage("userId must be al least 1 characters"),
+body("restaurantId")
+  .notEmpty()
+  .withMessage("restaurantId cannot be empty")
+  .isLength({ min: 1 })
+  .withMessage("restaurantId must be at least 1 characters"),
+  body("comment")
+  .isString()
+  .withMessage("Comment must be a string")
+  .notEmpty()
+  .withMessage("Comment cannot be empty")
+  .isLength({ min: 4 })
+  .withMessage("Comment must be al least 4 characters"),
+  body("rating")
+  .notEmpty()
+  .withMessage("Rating cannot be empty")
+  .isLength({ min: 1 })
+  .withMessage("Rating must be at least 1 characters"),
+checkValidations,
+];
+
 module.exports = { 
   createUserValidators, 
   createMealValidator,
   createRestaurantValidator,
+  createReviewValidators,
 };
